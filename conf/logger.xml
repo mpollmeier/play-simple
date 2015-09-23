@@ -1,0 +1,37 @@
+<configuration debug="false" scan="true" scanPeriod="30 seconds">
+
+    <property name="defaultPattern" value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg %ex%n" />
+    <property name="smtpHost" value="localhost" />
+    <property name="smtpPort" value="25" />
+    <property name="errorsEmailFrom" value="errors@spring.co.nz" />
+    <property name="errorsEmailTo" value="errors@spring.co.nz" />
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${defaultPattern}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="EMAIL_ERRORS" class="ch.qos.logback.classic.net.SMTPAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <smtpHost>${smtpHost}</smtpHost>
+        <smtpPort>${smtpPort}</smtpPort>
+        <to>${errorsEmailTo}</to>
+        <from>${errorsEmailFrom}</from>
+        <subject>[Monitoring] ERROR ${HOSTNAME} %logger - %msg</subject>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </layout>
+    </appender>
+
+    <logger name="com.jolbox.bonecp" level="ERROR">
+        <appender-ref ref="CONSOLE" />
+    </logger>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE" />
+    </root>
+
+</configuration>
