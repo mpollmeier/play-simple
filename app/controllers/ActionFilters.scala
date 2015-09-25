@@ -1,15 +1,20 @@
 package controllers
 
-import java.util.Base64
-import play.api.mvc.Security.AuthenticatedBuilder
-import play.api.mvc._
-import play.api.mvc.Security.AuthenticatedRequest
-import scala.concurrent.Future
-import models.Entities._
-
 import AuthenticationHelpers._
+import java.util.Base64
+import models.Entities._
+import play.api.mvc._
+import play.api.mvc.Results._
+import play.api.mvc.Security.AuthenticatedBuilder
+
 object Authenticated extends AuthenticatedBuilder(
-  _.headers.get("Authorization").flatMap(parseAuthHeader).flatMap(validateUser)
+  _.headers.get("Authorization")
+    .flatMap(parseAuthHeader)
+    .flatMap(validateUser),
+  onUnauthorized = { _ ⇒
+    Unauthorized(views.html.defaultpages.unauthorized())
+      .withHeaders("WWW-Authenticate" -> """Basic realm="Secured"""")
+  }
 )
 
 object AuthenticationHelpers {
